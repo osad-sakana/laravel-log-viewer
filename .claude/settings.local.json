@@ -5,7 +5,8 @@
       "Bash(pnpm run build:*)",
       "Bash(git init:*)",
       "Bash(pnpm add:*)",
-      "Bash(pnpm remove:*)"
+      "Bash(pnpm remove:*)",
+      "Bash(ls:*)"
     ]
   }
 }
