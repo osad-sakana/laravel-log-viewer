@@ -1,0 +1,106 @@
+{
+  "name": "laravel-log-viewer",
+  "displayName": "Laravel Log Viewer",
+  "description": "High-performance log viewer for Laravel applications",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:laravel-log-viewer.open"
+  ],
+  "main": "./out/extension/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "laravel-log-viewer.open",
+        "title": "Laravel Log Viewer: Open"
+      }
+    ],
+    "configuration": {
+      "title": "Laravel Log Viewer",
+      "properties": {
+        "laravelLogViewer.logPath": {
+          "type": "string",
+          "default": "storage/logs",
+          "description": "Relative path to Laravel logs directory"
+        },
+        "laravelLogViewer.logPatterns": {
+          "type": "array",
+          "default": ["laravel.log", "laravel-*.log", "*.log"],
+          "description": "Glob patterns for log files"
+        },
+        "laravelLogViewer.autoRefresh": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically refresh when log files change"
+        },
+        "laravelLogViewer.maxEntries": {
+          "type": "number",
+          "default": 1000,
+          "description": "Maximum number of log entries to display at once"
+        },
+        "laravelLogViewer.dateFormat": {
+          "type": "string",
+          "default": "yyyy-MM-dd HH:mm:ss",
+          "description": "Date format for log timestamps"
+        },
+        "laravelLogViewer.searchDebounceMs": {
+          "type": "number",
+          "default": 300,
+          "description": "Debounce delay for search in milliseconds"
+        },
+        "laravelLogViewer.indexingEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable indexing for faster search"
+        },
+        "laravelLogViewer.maxFileSizeMB": {
+          "type": "number",
+          "default": 100,
+          "description": "Maximum file size to process (in MB)"
+        },
+        "laravelLogViewer.indexExpirationDays": {
+          "type": "number",
+          "default": 7,
+          "description": "Number of days before index expires"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "tsc -p ./ && npm run build:webview",
+    "build:webview": "vite build",
+    "watch": "concurrently \"tsc -watch -p ./\" \"vite build --watch\"",
+    "dev": "vite",
+    "lint": "eslint src --ext ts,tsx"
+  },
+  "devDependencies": {
+    "@types/node": "^20.x",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.x",
+    "@typescript-eslint/parser": "^6.x",
+    "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10.4.16",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.x",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "date-fns": "^3.0.0",
+    "fast-glob": "^3.3.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-window": "^1.8.10",
+    "react-window-infinite-loader": "^1.0.9"
+  }
+}

@@ -1,0 +1,10 @@
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.yarnrc
+vite.config.ts
+tailwind.config.js
+postcss.config.js
+tsconfig.json
+node_modules
