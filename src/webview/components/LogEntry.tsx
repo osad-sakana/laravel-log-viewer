@@ -1,6 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { LogEntry as LogEntryType, LogLevel } from '../types/messages';
+import { StackTrace } from './StackTrace';
 
 interface LogEntryProps {
   entry: LogEntryType;
@@ -69,10 +70,7 @@ export const LogEntry: React.FC<LogEntryProps> = ({ entry }) => {
           </p>
 
           {entry.stackTrace && entry.stackTrace.length > 0 && (
-            <div className="mt-2 text-xs text-gray-500">
-              <span className="font-semibold">Stack trace available</span>
-              <span className="ml-2">({entry.stackTrace.length} frames)</span>
-            </div>
+            <StackTrace stackTrace={entry.stackTrace} />
           )}
         </div>
       </div>
