@@ -18,12 +18,24 @@ export interface LogEntry {
   lineNumber: number;
 }
 
+export interface SearchQuery {
+  keyword?: string;
+  levels?: LogLevel[];
+  dateRange?: {
+    start: string;
+    end: string;
+  };
+  environments?: string[];
+}
+
 export type MessageFromExtension =
   | { type: 'init'; payload: { message: string } }
   | { type: 'logsLoaded'; payload: { entries: LogEntry[]; total: number } }
+  | { type: 'searchResult'; payload: { entries: LogEntry[]; total: number; executionTime: number; filesSearched: number } }
   | { type: 'error'; payload: { message: string } };
 
 export type MessageToExtension =
   | { type: 'ready' }
   | { type: 'loadLogs' }
+  | { type: 'search'; payload: SearchQuery }
   | { type: 'openFile'; payload: { filePath: string; line: number } };

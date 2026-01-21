@@ -1,0 +1,13 @@
+[2025-01-20 14:00:00] production.INFO: Application deployed {"version":"2.1.0","environment":"production"}
+[2025-01-20 14:05:00] production.INFO: Cache cleared {"driver":"redis"}
+[2025-01-20 14:10:30] production.WARNING: Slow database query detected {"query":"SELECT * FROM orders JOIN users","time":"850ms"}
+[2025-01-20 14:15:00] production.ERROR: Payment processing failed {"order_id":4999,"error":"Gateway timeout"}
+Stack trace:
+#0 /var/www/app/Services/PaymentGateway.php(88): GuzzleHttp\Client->request()
+#1 /var/www/app/Controllers/PaymentController.php(45): App\Services\PaymentGateway->charge()
+[2025-01-20 14:20:00] production.CRITICAL: Database deadlock detected {"transaction":"update_inventory"}
+[2025-01-20 14:25:00] production.INFO: Background job completed {"job":"ProcessOrders","duration":"5.2s"}
+[2025-01-20 14:30:00] production.WARNING: Memory usage high {"current":"180MB","limit":"256MB"}
+[2025-01-20 14:35:00] production.ERROR: File upload failed {"filename":"document.pdf","error":"Disk quota exceeded"}
+[2025-01-20 14:40:00] production.INFO: Scheduled task executed {"task":"cleanup:sessions","deleted":1523}
+[2025-01-20 14:45:00] production.DEBUG: API request processed {"endpoint":"/api/v1/users","method":"GET","status":200,"time":"45ms"}

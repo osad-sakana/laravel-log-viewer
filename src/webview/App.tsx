@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LogEntry as LogEntryComponent } from './components/LogEntry';
-import { LogEntry, MessageFromExtension, MessageToExtension } from './types/messages';
+import { SearchPanel } from './components/SearchPanel';
+import { LogEntry, MessageFromExtension, MessageToExtension, SearchQuery } from './types/messages';
 
 declare const acquireVsCodeApi: () => {
   postMessage: (message: MessageToExtension) => void;
@@ -15,6 +16,8 @@ const App: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [executionTime, setExecutionTime] = useState<number>(0);
+  const [filesSearched, setFilesSearched] = useState<number>(0);
 
   useEffect(() => {
     vscode.postMessage({ type: 'ready' });
@@ -30,6 +33,17 @@ const App: React.FC = () => {
         case 'logsLoaded':
           setLogs(message.payload.entries);
           setTotal(message.payload.total);
+          setLoading(false);
+          setError(null);
+          setExecutionTime(0);
+          setFilesSearched(0);
+          break;
+
+        case 'searchResult':
+          setLogs(message.payload.entries);
+          setTotal(message.payload.total);
+          setExecutionTime(message.payload.executionTime);
+          setFilesSearched(message.payload.filesSearched);
           setLoading(false);
           setError(null);
           break;
@@ -54,6 +68,12 @@ const App: React.FC = () => {
     vscode.postMessage({ type: 'loadLogs' });
   };
 
+  const handleSearch = (query: SearchQuery) => {
+    setLoading(true);
+    setError(null);
+    vscode.postMessage({ type: 'search', payload: query });
+  };
+
   return (
     <div className="flex flex-col h-screen" style={{ backgroundColor: 'var(--vscode-editor-background)' }}>
       {/* Header */}
@@ -76,21 +96,32 @@ const App: React.FC = () => {
             color: 'var(--vscode-button-foreground)',
           }}
         >
-          {loading ? 'Loading...' : 'Load Logs'}
+          {loading ? 'Loading...' : 'Load All Logs'}
         </button>
       </div>
+
+      {/* Search Panel */}
+      <SearchPanel onSearch={handleSearch} loading={loading} />
 
       {/* Stats */}
       {logs.length > 0 && (
         <div
-          className="px-4 py-2 text-sm border-b"
+          className="px-4 py-2 text-sm border-b flex justify-between items-center"
           style={{
             borderColor: 'var(--vscode-panel-border)',
             backgroundColor: 'var(--vscode-sideBar-background)',
             color: 'var(--vscode-descriptionForeground)'
           }}
         >
-          Showing {logs.length} of {total} log entries
+          <span>
+            Showing {logs.length} of {total} log entries
+            {filesSearched > 0 && ` from ${filesSearched} file${filesSearched > 1 ? 's' : ''}`}
+          </span>
+          {executionTime > 0 && (
+            <span className="text-xs">
+              Search completed in {executionTime}ms
+            </span>
+          )}
         </div>
       )}
 
@@ -117,7 +148,8 @@ const App: React.FC = () => {
           >
             <div className="text-center">
               <p className="text-lg mb-2">No logs loaded</p>
-              <p className="text-sm">Click "Load Logs" to view Laravel logs</p>
+              <p className="text-sm mb-4">Click "Load All Logs" or use the search above</p>
+              <p className="text-xs">Phase 3: Search and filter functionality active ✓</p>
             </div>
           </div>
         )}
@@ -127,7 +159,7 @@ const App: React.FC = () => {
             className="flex items-center justify-center h-full"
             style={{ color: 'var(--vscode-descriptionForeground)' }}
           >
-            <p className="text-lg">Loading logs...</p>
+            <p className="text-lg">Searching logs...</p>
           </div>
         )}
 

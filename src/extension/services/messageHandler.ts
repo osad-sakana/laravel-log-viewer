@@ -1,18 +1,22 @@
 import * as vscode from 'vscode';
 import { LogParser } from '../core/logParser';
 import { LogFileDiscovery } from '../core/logFileDiscovery';
+import { LogSearchEngine } from '../core/logSearchEngine';
 import { ConfigService } from './configService';
 import { LogEntry } from '../models/logEntry';
+import { SearchQuery } from '../models/searchQuery';
 
 export class MessageHandler {
   private parser: LogParser;
   private discovery: LogFileDiscovery;
+  private searchEngine: LogSearchEngine;
 
   constructor(
     private panel: vscode.WebviewPanel
   ) {
     this.parser = new LogParser();
     this.discovery = new LogFileDiscovery();
+    this.searchEngine = new LogSearchEngine();
   }
 
   public async handleMessage(message: any): Promise<void> {
@@ -20,6 +24,10 @@ export class MessageHandler {
       switch (message.type) {
         case 'loadLogs':
           await this.handleLoadLogs();
+          break;
+
+        case 'search':
+          await this.handleSearch(message.payload);
           break;
 
         case 'openFile':
@@ -43,7 +51,7 @@ export class MessageHandler {
       }
 
       const config = ConfigService.getConfig();
-      const logFiles = await this.discovery.discover(workspaceRoot, config.logPath);
+      const logFiles = await this.discovery.discover(workspaceRoot, config.logPath, config.logPatterns);
 
       if (logFiles.length === 0) {
         this.sendError(`No log files found in ${config.logPath}. Please check your configuration.`);
@@ -75,6 +83,53 @@ export class MessageHandler {
       });
     } catch (error) {
       this.sendError(`Failed to load logs: ${error}`);
+    }
+  }
+
+  private async handleSearch(payload: SearchQuery): Promise<void> {
+    try {
+      const workspaceRoot = ConfigService.getWorkspaceRoot();
+      if (!workspaceRoot) {
+        this.sendError('No workspace folder open. Please open a Laravel project.');
+        return;
+      }
+
+      const config = ConfigService.getConfig();
+      const logFiles = await this.discovery.discover(workspaceRoot, config.logPath, config.logPatterns);
+
+      if (logFiles.length === 0) {
+        this.sendError(`No log files found in ${config.logPath}. Please check your configuration.`);
+        return;
+      }
+
+      const query: SearchQuery = {
+        ...payload,
+        dateRange: payload.dateRange
+          ? {
+              start: new Date(payload.dateRange.start),
+              end: new Date(payload.dateRange.end),
+            }
+          : undefined,
+      };
+
+      const result = await this.searchEngine.search(query, logFiles, config.maxEntries);
+
+      const serializedEntries = result.entries.map((entry: LogEntry) => ({
+        ...entry,
+        timestamp: entry.timestamp.toISOString(),
+      }));
+
+      this.panel.webview.postMessage({
+        type: 'searchResult',
+        payload: {
+          entries: serializedEntries,
+          total: result.total,
+          executionTime: result.executionTime,
+          filesSearched: result.filesSearched,
+        },
+      });
+    } catch (error) {
+      this.sendError(`Failed to search logs: ${error}`);
     }
   }
 

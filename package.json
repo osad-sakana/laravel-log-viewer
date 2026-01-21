@@ -30,7 +30,11 @@
         },
         "laravelLogViewer.logPatterns": {
           "type": "array",
-          "default": ["laravel.log", "laravel-*.log", "*.log"],
+          "default": [
+            "laravel.log",
+            "laravel-*.log",
+            "*.log"
+          ],
           "description": "Glob patterns for log files"
         },
         "laravelLogViewer.autoRefresh": {

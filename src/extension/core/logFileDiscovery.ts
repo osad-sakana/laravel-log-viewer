@@ -1,24 +1,40 @@
 import * as path from 'path';
 import * as fs from 'fs';
+import * as fg from 'fast-glob';
 import { LogFile } from '../models/logEntry';
 
 export class LogFileDiscovery {
-  public async discover(workspaceRoot: string, logPath: string): Promise<LogFile[]> {
+  public async discover(
+    workspaceRoot: string,
+    logPath: string,
+    patterns: string[] = ['laravel.log', 'laravel-*.log', '*.log']
+  ): Promise<LogFile[]> {
     const basePath = path.join(workspaceRoot, logPath);
 
     try {
-      const files: LogFile[] = [];
+      if (!fs.existsSync(basePath)) {
+        return [];
+      }
 
-      const laravelLogPath = path.join(basePath, 'laravel.log');
-      if (fs.existsSync(laravelLogPath)) {
-        const stats = fs.statSync(laravelLogPath);
-        files.push({
-          path: laravelLogPath,
+      const globPatterns = patterns.map((pattern) =>
+        path.join(basePath, pattern)
+      );
+
+      const filePaths = await fg.default(globPatterns, {
+        absolute: true,
+        onlyFiles: true,
+      });
+
+      const files: LogFile[] = filePaths.map((filePath: string) => {
+        const stats = fs.statSync(filePath);
+
+        return {
+          path: filePath,
           size: stats.size,
           mtime: stats.mtime,
-          type: 'single',
-        });
-      }
+          type: this.detectLogFileType(filePath),
+        };
+      });
 
       return files.sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
     } catch (error) {
