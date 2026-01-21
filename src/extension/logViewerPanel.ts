@@ -1,11 +1,13 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { MessageHandler } from './services/messageHandler';
 
 export class LogViewerPanel {
   public static currentPanel: LogViewerPanel | undefined;
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
+  private _messageHandler: MessageHandler;
 
   public static createOrShow(extensionUri: vscode.Uri) {
     const column = vscode.window.activeTextEditor
@@ -36,6 +38,7 @@ export class LogViewerPanel {
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     this._panel = panel;
     this._extensionUri = extensionUri;
+    this._messageHandler = new MessageHandler(this._panel);
 
     this._panel.webview.html = this._getHtmlForWebview();
 
@@ -55,8 +58,12 @@ export class LogViewerPanel {
       case 'ready':
         this._panel.webview.postMessage({
           type: 'init',
-          payload: { message: 'Hello from Extension Host!' },
+          payload: { message: 'Ready to load logs' },
         });
+        break;
+
+      default:
+        await this._messageHandler.handleMessage(message);
         break;
     }
   }

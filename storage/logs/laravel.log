@@ -1,0 +1,34 @@
+[2025-01-21 10:30:45] local.INFO: User logged in {"user_id":123,"ip":"192.168.1.1"}
+[2025-01-21 10:31:12] local.DEBUG: Database query executed {"query":"SELECT * FROM users","time":"15ms"}
+[2025-01-21 10:32:00] local.WARNING: Slow query detected {"query":"SELECT * FROM orders","time":"500ms"}
+[2025-01-21 10:33:15] local.ERROR: Failed to send email
+Stack trace:
+#0 /var/www/app/Mail/WelcomeEmail.php(45): Illuminate\Mail\Mailer->send()
+#1 /var/www/app/Controllers/UserController.php(78): App\Mail\WelcomeEmail->send()
+#2 /var/www/vendor/laravel/framework/src/Illuminate/Routing/Controller.php(54): App\Controllers\UserController->store()
+[2025-01-21 10:34:22] local.CRITICAL: Database connection failed {"error":"SQLSTATE[HY000] [2002] Connection refused"}
+Stack trace:
+#0 /var/www/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php(70): PDO->__construct()
+#1 /var/www/vendor/laravel/framework/src/Illuminate/Database/Connectors/MySqlConnector.php(24): Illuminate\Database\Connectors\Connector->createConnection()
+[2025-01-21 10:35:00] local.INFO: Cache cleared successfully
+[2025-01-21 10:36:15] local.ERROR: Undefined array key "email" {"file":"/var/www/app/Models/User.php","line":45}
+[2025-01-21 10:37:00] local.DEBUG: Route matched {"route":"api/users","method":"GET"}
+[2025-01-21 10:38:30] local.WARNING: High memory usage detected {"memory":"512MB","limit":"256MB"}
+[2025-01-21 10:39:00] local.INFO: Job queued {"job":"SendWelcomeEmail","queue":"emails"}
+[2025-01-21 10:40:15] production.ERROR: Payment gateway timeout
+Stack trace:
+#0 /var/www/app/Services/PaymentService.php(120): GuzzleHttp\Client->post()
+#1 /var/www/app/Controllers/CheckoutController.php(56): App\Services\PaymentService->processPayment()
+#2 /var/www/vendor/laravel/framework/src/Illuminate/Routing/Controller.php(54): App\Controllers\CheckoutController->process()
+[2025-01-21 10:41:00] local.INFO: User registered {"user_id":456,"email":"user@example.com"}
+[2025-01-21 10:42:30] local.DEBUG: API response {"status":200,"time":"120ms"}
+[2025-01-21 10:43:00] local.NOTICE: Scheduled task started {"task":"cleanup:old-logs"}
+[2025-01-21 10:44:15] local.ALERT: Disk space low {"available":"5%","path":"/var/www/storage"}
+[2025-01-21 10:45:00] local.EMERGENCY: Application crashed {"error":"OutOfMemoryError"}
+Stack trace:
+#0 /var/www/app/Services/ImageProcessor.php(89): imagecreatefromjpeg()
+#1 /var/www/app/Controllers/UploadController.php(34): App\Services\ImageProcessor->resize()
+[2025-01-21 10:46:00] local.INFO: Session started {"session_id":"abc123xyz"}
+[2025-01-21 10:47:30] local.WARNING: Failed login attempt {"ip":"192.168.1.100","attempts":3}
+[2025-01-21 10:48:00] local.ERROR: File not found {"path":"/var/www/storage/uploads/image.jpg"}
+[2025-01-21 10:49:15] local.INFO: Password reset email sent {"user_id":789}
