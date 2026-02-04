@@ -23,7 +23,7 @@ export class MessageHandler {
     try {
       switch (message.type) {
         case 'loadLogs':
-          await this.handleLoadLogs();
+          await this.handleLoadLogs(message.payload?.logPath);
           break;
 
         case 'search':
@@ -42,7 +42,7 @@ export class MessageHandler {
     }
   }
 
-  private async handleLoadLogs(): Promise<void> {
+  private async handleLoadLogs(customLogPath?: string): Promise<void> {
     try {
       const workspaceRoot = ConfigService.getWorkspaceRoot();
       if (!workspaceRoot) {
@@ -51,10 +51,11 @@ export class MessageHandler {
       }
 
       const config = ConfigService.getConfig();
-      const logFiles = await this.discovery.discover(workspaceRoot, config.logPath, config.logPatterns);
+      const logPath = customLogPath || config.logPath;
+      const logFiles = await this.discovery.discover(workspaceRoot, logPath, config.logPatterns);
 
       if (logFiles.length === 0) {
-        this.sendError(`No log files found in ${config.logPath}. Please check your configuration.`);
+        this.sendError(`No log files found in ${logPath}. Please check your configuration.`);
         return;
       }
 
@@ -86,7 +87,7 @@ export class MessageHandler {
     }
   }
 
-  private async handleSearch(payload: SearchQuery): Promise<void> {
+  private async handleSearch(payload: SearchQuery & { logPath?: string }): Promise<void> {
     try {
       const workspaceRoot = ConfigService.getWorkspaceRoot();
       if (!workspaceRoot) {
@@ -95,10 +96,11 @@ export class MessageHandler {
       }
 
       const config = ConfigService.getConfig();
-      const logFiles = await this.discovery.discover(workspaceRoot, config.logPath, config.logPatterns);
+      const logPath = payload.logPath || config.logPath;
+      const logFiles = await this.discovery.discover(workspaceRoot, logPath, config.logPatterns);
 
       if (logFiles.length === 0) {
-        this.sendError(`No log files found in ${config.logPath}. Please check your configuration.`);
+        this.sendError(`No log files found in ${logPath}. Please check your configuration.`);
         return;
       }
 

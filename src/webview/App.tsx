@@ -11,6 +11,8 @@ declare const acquireVsCodeApi: () => {
 
 const vscode = acquireVsCodeApi();
 
+const DEFAULT_LOG_PATH = 'storage/logs';
+
 const App: React.FC = () => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -18,16 +20,18 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [executionTime, setExecutionTime] = useState<number>(0);
   const [filesSearched, setFilesSearched] = useState<number>(0);
+  const [logPath, setLogPath] = useState<string>(DEFAULT_LOG_PATH);
 
   useEffect(() => {
     vscode.postMessage({ type: 'ready' });
+    vscode.postMessage({ type: 'loadLogs', payload: { logPath: DEFAULT_LOG_PATH } });
+    setLoading(true);
 
     const messageHandler = (event: MessageEvent<MessageFromExtension>) => {
       const message = event.data;
 
       switch (message.type) {
         case 'init':
-          setLoading(false);
           break;
 
         case 'logsLoaded':
@@ -62,16 +66,25 @@ const App: React.FC = () => {
     };
   }, []);
 
-  const handleLoadLogs = () => {
+  const handleLoadLogs = (path?: string) => {
+    const pathToUse = path ?? logPath;
     setLoading(true);
     setError(null);
-    vscode.postMessage({ type: 'loadLogs' });
+    vscode.postMessage({ type: 'loadLogs', payload: { logPath: pathToUse } });
   };
 
   const handleSearch = (query: SearchQuery) => {
     setLoading(true);
     setError(null);
-    vscode.postMessage({ type: 'search', payload: query });
+    vscode.postMessage({ type: 'search', payload: { ...query, logPath } });
+  };
+
+  const handlePathChange = (newPath: string) => {
+    setLogPath(newPath);
+  };
+
+  const handlePathSubmit = () => {
+    handleLoadLogs(logPath);
   };
 
   return (
@@ -101,7 +114,13 @@ const App: React.FC = () => {
       </div>
 
       {/* Search Panel */}
-      <SearchPanel onSearch={handleSearch} loading={loading} />
+      <SearchPanel
+        onSearch={handleSearch}
+        loading={loading}
+        logPath={logPath}
+        onPathChange={handlePathChange}
+        onPathSubmit={handlePathSubmit}
+      />
 
       {/* Stats */}
       {logs.length > 0 && (

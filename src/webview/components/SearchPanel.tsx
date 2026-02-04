@@ -4,11 +4,14 @@ import { LogLevel, SearchQuery } from '../types/messages';
 interface SearchPanelProps {
   onSearch: (query: SearchQuery) => void;
   loading: boolean;
+  logPath: string;
+  onPathChange: (path: string) => void;
+  onPathSubmit: () => void;
 }
 
 const LOG_LEVELS: LogLevel[] = ['DEBUG', 'INFO', 'NOTICE', 'WARNING', 'ERROR', 'CRITICAL', 'ALERT', 'EMERGENCY'];
 
-export const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch, loading }) => {
+export const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch, loading, logPath, onPathChange, onPathSubmit }) => {
   const [keyword, setKeyword] = useState('');
   const [selectedLevels, setSelectedLevels] = useState<LogLevel[]>([]);
 
@@ -21,11 +24,16 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch, loading }) =
   };
 
   const toggleLevel = (level: LogLevel) => {
-    setSelectedLevels((prev) =>
-      prev.includes(level)
-        ? prev.filter((l) => l !== level)
-        : [...prev, level]
-    );
+    const newLevels = selectedLevels.includes(level)
+      ? selectedLevels.filter((l) => l !== level)
+      : [...selectedLevels, level];
+
+    setSelectedLevels(newLevels);
+
+    onSearch({
+      keyword: keyword.trim() || undefined,
+      levels: newLevels.length > 0 ? newLevels : undefined,
+    });
   };
 
   const clearFilters = () => {
@@ -83,7 +91,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch, loading }) =
       </div>
 
       {/* Level Filters */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 mb-3">
         <span className="text-xs font-semibold mr-2 self-center" style={{ color: 'var(--vscode-foreground)' }}>
           Levels:
         </span>
@@ -103,6 +111,38 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch, loading }) =
             {level}
           </button>
         ))}
+      </div>
+
+      {/* Log Path */}
+      <div className="flex gap-2 items-center">
+        <span className="text-xs font-semibold" style={{ color: 'var(--vscode-foreground)' }}>
+          Path:
+        </span>
+        <input
+          type="text"
+          value={logPath}
+          onChange={(e) => onPathChange(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && onPathSubmit()}
+          placeholder="storage/logs"
+          disabled={loading}
+          className="flex-1 px-2 py-1 rounded text-xs"
+          style={{
+            backgroundColor: 'var(--vscode-input-background)',
+            color: 'var(--vscode-input-foreground)',
+            border: '1px solid var(--vscode-input-border)',
+          }}
+        />
+        <button
+          onClick={onPathSubmit}
+          disabled={loading}
+          className="px-3 py-1 rounded text-xs font-medium transition-colors disabled:opacity-50"
+          style={{
+            backgroundColor: 'var(--vscode-button-secondaryBackground)',
+            color: 'var(--vscode-button-secondaryForeground)',
+          }}
+        >
+          Load
+        </button>
       </div>
     </div>
   );

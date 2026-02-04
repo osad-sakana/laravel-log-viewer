@@ -36,6 +36,6 @@ export type MessageFromExtension =
 
 export type MessageToExtension =
   | { type: 'ready' }
-  | { type: 'loadLogs' }
-  | { type: 'search'; payload: SearchQuery }
+  | { type: 'loadLogs'; payload?: { logPath?: string } }
+  | { type: 'search'; payload: SearchQuery & { logPath?: string } }
   | { type: 'openFile'; payload: { filePath: string; line: number } };
