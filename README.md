@@ -1,6 +1,6 @@
-# Laravel Log Viewer
+# Laravel Log Explorer
 
-Laravel Log Viewerは、VS Code内でLaravelアプリケーションのログファイルを快適に閲覧・検索するための拡張機能です。
+Laravel Log Explorerは、VS Code内でLaravelアプリケーションのログファイルを快適に閲覧・検索するための拡張機能です。
 ログファイルを開いてgrepする手間を省き、色分けされた見やすいインターフェースで効率的にデバッグを行えます。
 
 ![screenshot](screenshot.png)
@@ -17,7 +17,7 @@ Laravel Log Viewerは、VS Code内でLaravelアプリケーションのログフ
 
 1.  VS CodeでLaravelプロジェクトを開きます。
 2.  コマンドパレットを開きます (`Cmd+Shift+P` on macOS / `Ctrl+Shift+P` on Windows/Linux)。
-3.  `Laravel Log Viewer: Open` と入力して実行します。
+3.  `Laravel Log Explorer: Open` と入力して実行します。
 4.  パネルにログビューアが表示され、`storage/logs` 内のログを確認できます。
 
 ## 設定

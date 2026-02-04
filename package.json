@@ -1,8 +1,27 @@
 {
-  "name": "laravel-log-viewer",
-  "displayName": "Laravel Log Viewer",
+  "name": "laravel-log-explorer",
+  "displayName": "Laravel Log Explorer",
   "description": "High-performance log viewer for Laravel applications",
   "version": "0.0.1",
+  "publisher": "osad-sakana",
+  "license": "MIT",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/osad-sakana/laravel-log-viewer"
+  },
+  "homepage": "https://github.com/osad-sakana/laravel-log-viewer#readme",
+  "bugs": {
+    "url": "https://github.com/osad-sakana/laravel-log-viewer/issues"
+  },
+  "keywords": [
+    "laravel",
+    "log",
+    "viewer",
+    "php",
+    "debug",
+    "logging"
+  ],
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -10,14 +29,14 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:laravel-log-viewer.open"
+    "onCommand:laravel-log-explorer.open"
   ],
   "main": "./out/extension/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "laravel-log-viewer.open",
-        "title": "Laravel Log Viewer: Open"
+        "command": "laravel-log-explorer.open",
+        "title": "Laravel Log Explorer: Open"
       }
     ],
     "configuration": {
@@ -89,6 +108,7 @@
     "@typescript-eslint/eslint-plugin": "^6.x",
     "@typescript-eslint/parser": "^6.x",
     "@vitejs/plugin-react": "^4.2.0",
+    "@vscode/vsce": "^3.7.1",
     "autoprefixer": "^10.4.16",
     "concurrently": "^8.2.2",
     "eslint": "^8.x",

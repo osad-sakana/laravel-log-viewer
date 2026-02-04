@@ -3,7 +3,7 @@ import { LogViewerPanel } from './logViewerPanel';
 
 export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
-    'laravel-log-viewer.open',
+    'laravel-log-explorer.open',
     () => {
       LogViewerPanel.createOrShow(context.extensionUri);
     }

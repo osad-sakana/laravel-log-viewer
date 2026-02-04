@@ -21,7 +21,7 @@ export class LogViewerPanel {
 
     const panel = vscode.window.createWebviewPanel(
       'laravelLogViewer',
-      'Laravel Log Viewer',
+      'Laravel Log Explorer',
       column || vscode.ViewColumn.One,
       {
         enableScripts: true,
